@@ -112,7 +112,6 @@ RUN if [ "$INSTALL_GO" = "true" ]; then \
     rm go1.22.2.linux-amd64.tar.gz ; \
     fi
 
-ARG INSTALL_GO=false
 ARG GO_PATH=/usr/local/go/bin
 ENV PATH=$PATH${INSTALL_GO:+:$GO_PATH}
 
@@ -195,8 +194,14 @@ RUN if [ "$INSTALL_PANDOC" = "true" ]; then \
     fi
 # --- Config Files ---
 
+RUN useradd -u 1001 user && \
+    mkdir -p /projects && \
+    chown -R 1001:0 /projects && \
+    chmod -R 775 /projects
 
 ENV HOME=/home/user
+ENV LD_LIBRARY_PATH=/usr/local/lib
+ENV PATH=/usr/local/bin:$PATH
 
 RUN mkdir -p $HOME/.config
 RUN mkdir -p $HOME/bin
@@ -205,18 +210,12 @@ RUN git clone https://github.com/Ghernis/dotfiles_2025.git /tmp/dotfiles && \
     cp -r /tmp/dotfiles/config/nvim $HOME/.config/nvim && \
     cp /tmp/dotfiles/.bashrc $HOME/.bashrc && \
     cp /tmp/dotfiles/.tmux.conf $HOME/.tmux.conf && \
-    cp /tmp/dotfiles/comp $HOME/bin/comp
+    cp /tmp/dotfiles/comp $HOME/bin/comp && \
+    chown -R 1001:0 $HOME
 
 RUN nvim --headless "+Lazy! sync" +qa
 RUN nvim --headless "+TSUpdateSync" +qa
 
-RUN chown -R 1001:0 /home/user
 
-
-# Set up non-root user for OpenShift
-ENV LD_LIBRARY_PATH=/usr/local/lib
-ENV PATH=/usr/local/bin:$PATH
-
-RUN useradd -u 1001 user
 USER 1001
 WORKDIR /projects
