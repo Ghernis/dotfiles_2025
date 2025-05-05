@@ -1,0 +1,43 @@
+#!/bin/bash
+# General handler for compiling files
+
+function_pandoc(){
+    nextcloud="$HOME/Nextcloud/NextCloudSyncFolder/vimwiki"
+    if [[ $1 == 1 ]];then
+        pandoc "$file" --metadata-file="$nextcloud/metadatafiles/clase.yaml" --filter pandoc-crossref --citeproc --pdf-engine=xelatex --bibliography="$nextcloud/biblio/biblio.bib" --csl="$nextcloud/biblio/apa.csl" -o "$base".pdf && zathura "$base".pdf
+        #Salida rapida a docx
+        #pandoc "$file" --metadata-file="$nextcloud/metadatafiles/clase.yaml" --filter pandoc-crossref --citeproc --pdf-engine=xelatex --bibliography="$nextcloud/biblio/biblio.bib" --csl="$nextcloud/biblio/apa.csl" -o "$base".docx
+    else
+        pandoc "$file" --metadata-file="$nextcloud/metadatafiles/doc.yaml" --filter pandoc-crossref --citeproc --pdf-engine=xelatex --bibliography="$nextcloud/biblio/biblio.bib" --csl="$nextcloud/biblio/apa.csl" -o "$base".pdf && zathura "$base".pdf
+
+    fi
+
+}
+#echo "$PWD"
+uade=0
+if [[ "$PWD" == *"uade"* ]]; then
+    uade=1
+fi
+file=$(readlink -f "$1")
+base=$(echo "$file" | sed 's/\..*//')
+
+handlebang() {
+    bang=$(head -n 1 "$file")
+    case "$bang" in
+        *!/bin/bash) "$file";;
+        *) echo "Can't compile";;
+    esac
+}
+
+
+case "$1" in
+    #*.md) function_pandoc $uade;;
+    *.md) pandoc "$file" -o "$base.pdf";;
+    #*.rs) rustc "$file";;
+    *.go) go run "$file";;
+    *.rs) cargo build;;
+    *.tex) pdflatex "$file" && zathura "$base".pdf;;
+    *.py) python "$file";;
+    *.puml) java -jar ~/bin/plantuml.jar "$file";; #&& gpicview "$base".png;;
+    *) handlebang;;
+esac
