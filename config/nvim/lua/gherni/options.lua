@@ -1,0 +1,31 @@
+local opt = vim.opt
+
+opt.tabstop = 4
+opt.softtabstop = 4
+opt.shiftwidth = 4
+opt.expandtab = true
+opt.smartindent = true
+opt.exrc = true
+opt.guicursor = ""
+opt.relativenumber = true
+opt.number = true
+opt.hlsearch = false
+opt.hidden = true
+opt.errorbells = false
+-- opt.wrap = false  -- this line was commented out
+opt.ignorecase = true
+opt.swapfile = false
+opt.backup = false
+opt.undofile = true
+opt.incsearch = true
+opt.termguicolors = true
+opt.scrolloff = 8
+opt.colorcolumn = "80"
+opt.signcolumn = "yes"
+-- opt.clipboard = "unnamed" -- commented
+opt.spell = false
+opt.spelllang = { "es" }
+-- opt.autochdir = true -- commented
+opt.splitbelow = true
+opt.splitright = true
+
