@@ -18,5 +18,5 @@ require("mason-lspconfig").setup({
         "pyright",
         "bashls",
     },
-    automatic_installation = true,
+    automatic_installation = false,
 })

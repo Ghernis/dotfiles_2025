@@ -210,12 +210,24 @@ RUN git clone https://github.com/Ghernis/dotfiles_2025.git /tmp/dotfiles && \
     cp -r /tmp/dotfiles/config/nvim $HOME/.config/nvim && \
     cp /tmp/dotfiles/.bashrc $HOME/.bashrc && \
     cp /tmp/dotfiles/.tmux.conf $HOME/.tmux.conf && \
-    cp /tmp/dotfiles/comp $HOME/bin/comp && \
-    chown -R 1001:0 $HOME
+    cp /tmp/dotfiles/comp $HOME/bin/comp
 
-RUN nvim --headless "+Lazy! sync" +qa
-RUN nvim --headless "+TSUpdateSync" +qa
+# Neovim runtime dirs
+#RUN mkdir -p $HOME/.local/share $HOME/.local/state/nvim/shada && \
+#    chown -R 1001:0 $HOME/.local
 
+#RUN chown -R 1001:0 $HOME/
+
+# Pre-sync plugins
+RUN nvim --headless "+Lazy! sync" +qa && \
+    nvim --headless "+TSUpdateSync" +qa
+
+# Neovim runtime dirs
+
+RUN mkdir -p $HOME/.local/state/nvim/shada
+RUN mkdir -p $HOME/.cache/nvim/luac
+
+RUN chown -R 1001:0 $HOME && chmod 0755 $HOME
 
 USER 1001
 WORKDIR /projects

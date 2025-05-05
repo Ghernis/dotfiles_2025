@@ -1,0 +1,6 @@
+#!/bin/bash
+sudo docker build . -t gherni/devspace --progress=plain \
+	--build-arg INSTALL_GO=true \
+	--build-arg INSTALL_PYTHON=true \
+	--build-arg INSTALL_NODE=true
+
