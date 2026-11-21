@@ -1,35 +1,39 @@
 return {
-    {
-        "nvim-treesitter/nvim-treesitter",
-        build = ":TSUpdate",
-        config = function()
-            require('nvim-treesitter.configs').setup {
-                ensure_installed = {
-                    "c",
-                    "lua",
-                    "vim",
-                    "vimdoc",
-                    "query",
-                    "markdown",
-                    "markdown_inline",
-                    "typescript",
-                    "javascript",
-                    "python",
-                    "query"
-                },
-                auto_install = true,
-                highlight = {
-                    enable = true,
-                    disable = function(lang, buf)
-                        local max_filesize = 100 * 1024 -- 100 KB
-                        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-                        if ok and stats and stats.size > max_filesize then
-                            return true
-                        end
-                    end,
-                    additional_vim_regex_highlighting = false,
-                },
-            }
-        end,
-    }
+    "nvim-treesitter/nvim-treesitter",
+    lazy = false,
+    branch = "main",
+    build = ":TSUpdate",
+    config = function()
+        local parsers = {
+            "bash",
+            "c",
+            "go",
+            "json",
+            "lua",
+            "markdown",
+            "markdown_inline",
+            "python",
+            "query",
+            "vim",
+            "vimdoc",
+            "yaml",
+        }
+
+        local ok, err = pcall(function()
+            require("nvim-treesitter").install(parsers):wait(300000)
+        end)
+        if not ok then
+            vim.notify("treesitter install failed: " .. tostring(err), vim.log.levels.WARN)
+        end
+
+        vim.api.nvim_create_autocmd("FileType", {
+            callback = function()
+                if pcall(vim.treesitter.start) then
+                    vim.wo.foldmethod = "expr"
+                    vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+                    vim.wo.foldlevel = 99
+                end
+            end,
+        })
+    end,
 }
